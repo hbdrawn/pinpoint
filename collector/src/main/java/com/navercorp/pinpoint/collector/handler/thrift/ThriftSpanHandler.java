@@ -17,6 +17,8 @@
 package com.navercorp.pinpoint.collector.handler.thrift;
 
 import com.navercorp.pinpoint.collector.handler.SimpleHandler;
+import com.navercorp.pinpoint.collector.service.AgentStatService;
+import com.navercorp.pinpoint.collector.service.ITraceService;
 import com.navercorp.pinpoint.collector.service.TraceService;
 import com.navercorp.pinpoint.common.server.bo.SpanBo;
 import com.navercorp.pinpoint.common.server.bo.SpanFactory;
@@ -31,6 +33,9 @@ import com.navercorp.pinpoint.thrift.dto.TSpan;
 
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author emeroad
  * @author netspider
@@ -40,8 +45,8 @@ public class ThriftSpanHandler implements SimpleHandler {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    private TraceService traceService;
+    @Autowired(required = false)
+    private List<ITraceService> iTraceServiceList = Collections.emptyList();
 
     @Autowired
     private SpanFactory spanFactory;
@@ -68,7 +73,10 @@ public class ThriftSpanHandler implements SimpleHandler {
             }
 
             final SpanBo spanBo = spanFactory.buildSpanBo(tSpan);
-            traceService.insertSpan(spanBo);
+            for(ITraceService traceService : iTraceServiceList){
+                traceService.insertSpan(spanBo);
+            }
+
         } catch (Exception e) {
             logger.warn("Span handle error. Caused:{}. Span:{}", e.getMessage(), tbase, e);
         }

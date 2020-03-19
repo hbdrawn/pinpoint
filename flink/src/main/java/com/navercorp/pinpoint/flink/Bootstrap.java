@@ -21,9 +21,11 @@ import com.navercorp.pinpoint.flink.config.FlinkConfiguration;
 import com.navercorp.pinpoint.flink.dao.hbase.*;
 import com.navercorp.pinpoint.flink.function.ApplicationStatBoWindowInterceptor;
 import com.navercorp.pinpoint.flink.process.ApplicationCache;
+import com.navercorp.pinpoint.flink.process.TBase4SpanFlatMapper;
 import com.navercorp.pinpoint.flink.process.TBaseFlatMapper;
 import com.navercorp.pinpoint.flink.process.TBaseFlatMapperInterceptor;
 import com.navercorp.pinpoint.flink.receiver.AgentStatHandler;
+import com.navercorp.pinpoint.flink.receiver.SpanHandler;
 import com.navercorp.pinpoint.flink.receiver.TcpDispatchHandler;
 import com.navercorp.pinpoint.flink.receiver.TcpSourceFunction;
 import com.navercorp.pinpoint.flink.vo.RawData;
@@ -46,6 +48,7 @@ public class Bootstrap {
     private final ClassPathXmlApplicationContext applicationContext;
 
     private final TBaseFlatMapper tbaseFlatMapper;
+    private final TBase4SpanFlatMapper tBase4SpanFlatMapper;
     private final FlinkConfiguration flinkConfiguration;
     private final TcpDispatchHandler tcpDispatchHandler;
     private final TcpSourceFunction tcpSourceFunction;
@@ -66,6 +69,7 @@ public class Bootstrap {
         applicationContext = new ClassPathXmlApplicationContext("applicationContext-flink.xml");
 
         tbaseFlatMapper = applicationContext.getBean("tbaseFlatMapper", TBaseFlatMapper.class);
+        tBase4SpanFlatMapper = applicationContext.getBean("tBase4SpanFlatMapper", TBase4SpanFlatMapper.class);
         flinkConfiguration = applicationContext.getBean("flinkConfiguration", FlinkConfiguration.class);
         tcpDispatchHandler = applicationContext.getBean("tcpDispatchHandler", TcpDispatchHandler.class);
         tcpSourceFunction = applicationContext.getBean("tcpSourceFunction", TcpSourceFunction.class);
@@ -80,7 +84,7 @@ public class Bootstrap {
         fileDescriptorDao = applicationContext.getBean("fileDescriptorDao", FileDescriptorDao.class);
         directBufferDao = applicationContext.getBean("directBufferDao", DirectBufferDao.class);
         tBaseFlatMapperInterceptor = applicationContext.getBean("tBaseFlatMapperInterceptor", TBaseFlatMapperInterceptor.class);
-        statisticsDaoInterceptor =  applicationContext.getBean("statisticsDaoInterceptor", StatisticsDaoInterceptor.class);
+        statisticsDaoInterceptor = applicationContext.getBean("statisticsDaoInterceptor", StatisticsDaoInterceptor.class);
         applicationStatBoWindowInterceptor = applicationContext.getBean("applicationStatBoWindowInterceptor", ApplicationStatBoWindowInterceptor.class);
     }
 
@@ -131,6 +135,9 @@ public class Bootstrap {
     public TBaseFlatMapper getTbaseFlatMapper() {
         return tbaseFlatMapper;
     }
+    public TBase4SpanFlatMapper getTBase4SpanFlatMapper() {
+        return tBase4SpanFlatMapper;
+    }
 
     public ApplicationCache getApplicationCache() {
         return applicationCache;
@@ -157,7 +164,9 @@ public class Bootstrap {
 
     public void setStatHandlerTcpDispatchHandler(SourceContext<RawData> sourceContext) {
         AgentStatHandler agentStatHandler = new AgentStatHandler(sourceContext);
+        SpanHandler spanHandler = new SpanHandler(sourceContext);
         tcpDispatchHandler.setAgentStatHandler(agentStatHandler);
+        tcpDispatchHandler.setSpanHandler(spanHandler);
     }
 
     public FlinkServerRegister initFlinkServerRegister() {

@@ -19,9 +19,14 @@ import com.navercorp.pinpoint.common.server.bo.stat.join.*;
 import com.navercorp.pinpoint.flink.Bootstrap;
 import com.navercorp.pinpoint.flink.function.ApplicationStatBoWindow;
 import com.navercorp.pinpoint.flink.mapper.thrift.stat.JoinAgentStatBoMapper;
+import com.navercorp.pinpoint.flink.vo.ApplicationStatus4Neo4j;
 import com.navercorp.pinpoint.flink.vo.RawData;
 import com.navercorp.pinpoint.thrift.dto.flink.TFAgentStatBatch;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
+import org.apache.flink.api.common.state.MapState;
+import org.apache.flink.api.common.state.MapStateDescriptor;
+import org.apache.flink.api.common.state.StateTtlConfig;
+import org.apache.flink.api.common.time.Time;
 import org.apache.flink.api.java.tuple.Tuple3;
 
 import org.apache.flink.configuration.Configuration;
@@ -32,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -91,7 +97,7 @@ public class TBaseFlatMapper extends RichFlatMapFunction<RawData, Tuple3<String,
         }
     }
 
-    private List<Tuple3<String, JoinStatBo, Long>> serverRequestFlatMap(TBase tBase) {
+    private List<Tuple3<String, JoinStatBo, Long>> serverRequestFlatMap(TBase tBase) throws Exception {
         List<Tuple3<String, JoinStatBo, Long>> outData = new ArrayList<>(5);
 
         if (tBase instanceof TFAgentStatBatch) {
@@ -117,7 +123,7 @@ public class TBaseFlatMapper extends RichFlatMapFunction<RawData, Tuple3<String,
             final String applicationId = applicationCache.findApplicationId(applicationKey);
 
             if (applicationId.equals(ApplicationCache.NOT_FOUND_APP_ID)) {
-                logger.warn("can't found application id. agent id : {}, start time : {}.",joinAgentStatBo.getId(), joinAgentStatBo.getTimestamp());
+                logger.warn("can't found application id. agent id : {}, start time : {}.", joinAgentStatBo.getId(), joinAgentStatBo.getTimestamp());
                 return EMPTY_LIST;
             }
 
@@ -125,7 +131,14 @@ public class TBaseFlatMapper extends RichFlatMapFunction<RawData, Tuple3<String,
 
             for (JoinApplicationStatBo joinApplicationStatBo : joinApplicationStatBoList) {
                 outData.add(new Tuple3<String, JoinStatBo, Long>(applicationId, joinApplicationStatBo, joinApplicationStatBo.getTimestamp()));
+                ApplicationStatus4Neo4j applicationStatus4Neo4j = new ApplicationStatus4Neo4j();
+                applicationStatus4Neo4j.setApplicationId(applicationId);
+                applicationStatus4Neo4j.setAgentId(joinAgentStatBo.getId());
+                applicationStatus4Neo4j.setLastTime(new Date(joinApplicationStatBo.getTimestamp()));
+                outData.add(new Tuple3<String, JoinStatBo, Long>(applicationId, applicationStatus4Neo4j, joinApplicationStatBo.getTimestamp()));
+
             }
+
         }
 
         return outData;

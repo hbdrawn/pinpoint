@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class TraceService {
+public class TraceService implements ITraceService{
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -51,6 +51,7 @@ public class TraceService {
     @Autowired
     private ServiceTypeRegistryService registry;
 
+    @Override
     public void insertSpanChunk(final SpanChunkBo spanChunkBo) {
         traceDao.insertSpanChunk(spanChunkBo);
         final ServiceType applicationServiceType = getApplicationServiceType(spanChunkBo);
@@ -66,6 +67,7 @@ public class TraceService {
         return registry.findServiceType(applicationServiceTypeCode);
     }
 
+    @Override
     public void insertSpan(final SpanBo spanBo) {
         traceDao.insert(spanBo);
         applicationTraceIndexDao.insert(spanBo);

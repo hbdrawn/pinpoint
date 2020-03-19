@@ -17,6 +17,7 @@
 package com.navercorp.pinpoint.collector.handler.thrift;
 
 import com.navercorp.pinpoint.collector.handler.SimpleHandler;
+import com.navercorp.pinpoint.collector.service.ITraceService;
 import com.navercorp.pinpoint.collector.service.TraceService;
 import com.navercorp.pinpoint.common.server.bo.SpanChunkBo;
 import com.navercorp.pinpoint.common.server.bo.SpanFactory;
@@ -31,6 +32,9 @@ import com.navercorp.pinpoint.thrift.dto.TSpanChunk;
 
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author emeroad
  */
@@ -39,8 +43,8 @@ public class ThriftSpanChunkHandler implements SimpleHandler {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    private TraceService traceService;
+    @Autowired(required = false)
+    private List<ITraceService> iTraceServiceList = Collections.emptyList();
 
     @Autowired
     private SpanFactory spanFactory;
@@ -59,7 +63,9 @@ public class ThriftSpanChunkHandler implements SimpleHandler {
 
         try {
             final SpanChunkBo spanChunkBo = newSpanChunkBo(tbase);
-            this.traceService.insertSpanChunk(spanChunkBo);
+            for (ITraceService traceService : iTraceServiceList) {
+                traceService.insertSpanChunk(spanChunkBo);
+            }
         } catch (Exception e) {
             logger.warn("SpanChunk handle error Caused:{}", e.getMessage(), e);
         }

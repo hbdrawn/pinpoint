@@ -31,9 +31,13 @@ public class TcpDispatchHandler implements DispatchHandler {
 
     private AgentStatHandler agentStatHandler;
 
+    private SpanHandler spanHandler;
+
     private SimpleHandler getSimpleHandler(Header header) {
         if (header.getType() == FlinkTBaseLocator.AGENT_STAT_BATCH) {
             return agentStatHandler;
+        } else if (header.getType() == FlinkTBaseLocator.AGENT_SPAN_INFO) {
+            return spanHandler;
         }
         throw new UnsupportedOperationException("unsupported header:" + header);
     }
@@ -45,6 +49,10 @@ public class TcpDispatchHandler implements DispatchHandler {
 
     public void setAgentStatHandler(AgentStatHandler agentStatHandler) {
         this.agentStatHandler = Objects.requireNonNull(agentStatHandler, "agentStatHandler must not be null");
+    }
+
+    public void setSpanHandler(SpanHandler spanHandler) {
+        this.spanHandler = Objects.requireNonNull(spanHandler, "spanHandler must not be null");
     }
 
     @Override

@@ -17,6 +17,7 @@ package com.navercorp.pinpoint.collector.cluster.flink;
 
 import com.navercorp.pinpoint.collector.sender.FlinkTcpDataSender;
 import com.navercorp.pinpoint.collector.service.SendAgentStatService;
+import com.navercorp.pinpoint.collector.service.SendTraceService;
 import com.navercorp.pinpoint.collector.util.Address;
 
 import java.util.ArrayList;
@@ -31,9 +32,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TcpDataSenderRepository {
     private final ConcurrentHashMap<Address, SenderContext> clusterConnectionRepository = new ConcurrentHashMap<>();
     private final SendAgentStatService sendAgentStatService;
+    private final SendTraceService sendTraceService;
 
-    TcpDataSenderRepository(SendAgentStatService sendAgentStatService) {
+    TcpDataSenderRepository(SendAgentStatService sendAgentStatService,SendTraceService sendTraceService) {
         this.sendAgentStatService = sendAgentStatService;
+        this.sendTraceService = sendTraceService;
     }
 
     public SenderContext putIfAbsent(Address address, SenderContext senderContext) {

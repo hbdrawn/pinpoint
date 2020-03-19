@@ -30,6 +30,7 @@ public class ApplicationStatBoFliter implements FilterFunction<Tuple3<String, Jo
 
     @Override
     public boolean filter(Tuple3<String, JoinStatBo, Long> value) throws Exception {
+        logger.debug("rec values : {},{},{}", value.f0, value.f1, value.f2);
         if (value.f1 instanceof JoinApplicationStatBo) {
             return true;
         }

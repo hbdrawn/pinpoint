@@ -61,6 +61,7 @@
     </bean>
 
     <bean id="tbaseFlatMapper" class="com.navercorp.pinpoint.flink.process.TBaseFlatMapper"/>
+    <bean id="tBase4SpanFlatMapper" class="com.navercorp.pinpoint.flink.process.TBase4SpanFlatMapper"/>
 
     <bean id="applicationCache" class="com.navercorp.pinpoint.flink.process.ApplicationCache">
         <constructor-arg index="0" ref="hbaseTemplate"/>

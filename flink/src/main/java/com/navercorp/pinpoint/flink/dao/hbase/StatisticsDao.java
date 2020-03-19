@@ -82,7 +82,7 @@ public class StatisticsDao implements OutputFormat<Tuple3<String, JoinStatBo, Lo
                 }
                 insertJoinAgentStatBo((JoinAgentStatBo) joinStatBo);
             } else if (joinStatBo instanceof JoinApplicationStatBo) {
-//            logger.info("JoinApplicationStatBo insert data : " + joinStatBo);
+            logger.info("JoinApplicationStatBo insert data : " + joinStatBo);
                 insertJoinApplicationStatBo((JoinApplicationStatBo) joinStatBo);
             }
         } finally {

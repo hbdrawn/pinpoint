@@ -28,10 +28,12 @@
     <import resource="classpath:applicationContext-flink-extend.xml"/>
     <import resource="classpath:applicationContext-hbase.xml"/>
     <import resource="classpath:applicationContext-cache.xml"/>
+    <import resource="classpath:applicationContext-web.xml"/>
 
     <context:component-scan
             base-package="com.navercorp.pinpoint.common.server.util,
-                        com.navercorp.pinpoint.collector.mapper.thrift.stat"/>
+                                         com.navercorp.pinpoint.collector.mapper.thrift.stat,
+                                         com.tk"/>
 
 
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -45,7 +47,6 @@
     </bean>
 
     <util:properties id="pinpoint_flink_properties" location="classpath:pinpoint-flink.properties"/>
-
 
     <bean id="flinkConfiguration" class="com.navercorp.pinpoint.flink.config.FlinkConfiguration">
         <property name="properties" ref="pinpoint_flink_properties"/>
@@ -69,39 +70,52 @@
     </bean>
 
 
-    <bean id="applicationStatRowKeyEncoder" class="com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatRowKeyEncoder"/>
-    <bean id="applicationStatRowKeyDecoder" class="com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatRowKeyDecoder"/>
-    <bean id="applicationStatHbaseOperationFactory" class="com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatHbaseOperationFactory">
+    <bean id="applicationStatRowKeyEncoder"
+          class="com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatRowKeyEncoder"/>
+    <bean id="applicationStatRowKeyDecoder"
+          class="com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatRowKeyDecoder"/>
+    <bean id="applicationStatHbaseOperationFactory"
+          class="com.navercorp.pinpoint.common.server.bo.serializer.stat.ApplicationStatHbaseOperationFactory">
         <constructor-arg index="0" ref="applicationStatRowKeyEncoder"/>
         <constructor-arg index="1" ref="applicationStatRowKeyDecoder"/>
         <constructor-arg index="2" ref="applicationStatRowKeyDistributor"/>
     </bean>
 
-    <bean id="agentStatDataPointCodec" class="com.navercorp.pinpoint.common.server.bo.codec.stat.AgentStatDataPointCodec"/>
+    <bean id="agentStatDataPointCodec"
+          class="com.navercorp.pinpoint.common.server.bo.codec.stat.AgentStatDataPointCodec"/>
     <bean id="joinCpuLoadCodec" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.CpuLoadCodec"/>
     <bean id="cpuLoadEncoder" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.CpuLoadEncoder"/>
-    <bean id="cpuLoadSerializer" class="com.navercorp.pinpoint.common.server.bo.serializer.stat.join.CpuLoadSerializer"/>
+    <bean id="cpuLoadSerializer"
+          class="com.navercorp.pinpoint.common.server.bo.serializer.stat.join.CpuLoadSerializer"/>
     <bean id="joinMemoryCodec" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.MemoryCodec"/>
     <bean id="memoryEncoder" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.MemoryEncoder"/>
     <bean id="memorySerializer" class="com.navercorp.pinpoint.common.server.bo.serializer.stat.join.MemorySerializer"/>
     <bean id="joinTransactionCodec" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.TransactionCodec"/>
     <bean id="transactionEncoder" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.TransactionEncoder"/>
-    <bean id="transactionSerializer" class="com.navercorp.pinpoint.common.server.bo.serializer.stat.join.TransactionSerializer"/>
+    <bean id="transactionSerializer"
+          class="com.navercorp.pinpoint.common.server.bo.serializer.stat.join.TransactionSerializer"/>
     <bean id="joinActiveTraceCodec" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.ActiveTraceCodec"/>
     <bean id="activeTraceEncoder" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.ActiveTraceEncoder"/>
-    <bean id="activeTraceSerializer" class="com.navercorp.pinpoint.common.server.bo.serializer.stat.join.ActiveTraceSerializer"/>
+    <bean id="activeTraceSerializer"
+          class="com.navercorp.pinpoint.common.server.bo.serializer.stat.join.ActiveTraceSerializer"/>
     <bean id="joinResponseTimeCodec" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.ResponseTimeCodec"/>
     <bean id="responseTimeEncoder" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.ResponseTimeEncoder"/>
-    <bean id="responseTimeSerializer" class="com.navercorp.pinpoint.common.server.bo.serializer.stat.join.ResponseTimeSerializer"/>
+    <bean id="responseTimeSerializer"
+          class="com.navercorp.pinpoint.common.server.bo.serializer.stat.join.ResponseTimeSerializer"/>
     <bean id="joinDataSourceCodec" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.DataSourceCodec"/>
     <bean id="dataSourceEncoder" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.DataSourceEncoder"/>
-    <bean id="dataSourceSerializer" class="com.navercorp.pinpoint.common.server.bo.serializer.stat.join.DataSourceSerializer"/>
-    <bean id="joinFileDescriptorCodec" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.FileDescriptorCodec"/>
-    <bean id="fileDescriptorEncoder" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.FileDescriptorEncoder"/>
-    <bean id="fileDescriptorSerializer" class="com.navercorp.pinpoint.common.server.bo.serializer.stat.join.FileDescriptorSerializer"/>
+    <bean id="dataSourceSerializer"
+          class="com.navercorp.pinpoint.common.server.bo.serializer.stat.join.DataSourceSerializer"/>
+    <bean id="joinFileDescriptorCodec"
+          class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.FileDescriptorCodec"/>
+    <bean id="fileDescriptorEncoder"
+          class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.FileDescriptorEncoder"/>
+    <bean id="fileDescriptorSerializer"
+          class="com.navercorp.pinpoint.common.server.bo.serializer.stat.join.FileDescriptorSerializer"/>
     <bean id="joinDirectBufferCodec" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.DirectBufferCodec"/>
     <bean id="directBufferEncoder" class="com.navercorp.pinpoint.common.server.bo.codec.stat.join.DirectBufferEncoder"/>
-    <bean id="directBufferSerializer" class="com.navercorp.pinpoint.common.server.bo.serializer.stat.join.DirectBufferSerializer"/>
+    <bean id="directBufferSerializer"
+          class="com.navercorp.pinpoint.common.server.bo.serializer.stat.join.DirectBufferSerializer"/>
 
     <bean id="joinAgentStatBoMapper" class="com.navercorp.pinpoint.flink.mapper.thrift.stat.JoinAgentStatBoMapper"/>
 
@@ -168,7 +182,8 @@
 
     <!-- DispatchHandler-related Beans -->
     <bean id="tcpDispatchHandler" class="com.navercorp.pinpoint.flink.receiver.TcpDispatchHandler"/>
-    <bean id="tcpDispatchHandlerWrapper" class="com.navercorp.pinpoint.collector.receiver.thrift.DispatchHandlerFactoryBean">
+    <bean id="tcpDispatchHandlerWrapper"
+          class="com.navercorp.pinpoint.collector.receiver.thrift.DispatchHandlerFactoryBean">
         <constructor-arg ref="tcpDispatchHandler"/>
         <constructor-arg ref="handlerManager"/>
     </bean>
@@ -181,7 +196,8 @@
     <bean id="flinkHeaderTBaseSerializerFactory" class="com.navercorp.pinpoint.thrift.io.HeaderTBaseSerializerFactory">
         <constructor-arg index="0" value="#{flinkTBaseLocator.typeLocator}"/>
     </bean>
-    <bean id="flinkHeaderTBaseDeserializerFactory" class="com.navercorp.pinpoint.thrift.io.FlinkHeaderTBaseDeserializerFactory">
+    <bean id="flinkHeaderTBaseDeserializerFactory"
+          class="com.navercorp.pinpoint.thrift.io.FlinkHeaderTBaseDeserializerFactory">
         <constructor-arg index="0" value="#{flinkTBaseLocator.typeLocator}"/>
     </bean>
     <bean id="flinkPacketHandlerFactory" class="com.navercorp.pinpoint.flink.receiver.FlinkPacketHandlerFactory">
@@ -224,7 +240,8 @@
         <constructor-arg ref="addressFilter"/>
     </bean>
 
-    <bean id="spanAcceptorProvider" class="com.navercorp.pinpoint.collector.receiver.thrift.PinpointServerAcceptorProvider">
+    <bean id="spanAcceptorProvider"
+          class="com.navercorp.pinpoint.collector.receiver.thrift.PinpointServerAcceptorProvider">
         <property name="channelFilter" ref="channelFilter"/>
     </bean>
     <bean id="tcpReceiver" class="com.navercorp.pinpoint.collector.receiver.thrift.TCPReceiverBean" lazy-init="true">

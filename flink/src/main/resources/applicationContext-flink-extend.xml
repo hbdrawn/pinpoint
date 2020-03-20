@@ -10,4 +10,9 @@
     <bean id="tableNameProvider" class="com.navercorp.pinpoint.common.hbase.HbaseTableNameProvider">
         <constructor-arg index="0" value="${hbase.namespace:default}"/>
     </bean>
+
+    <bean id="agentDownloadInfoDao" class="com.navercorp.pinpoint.web.dao.AgentDownloadInfoDaoFactory" factory-method="create">
+        <constructor-arg index="0" value="#{pinpointWebProps['web.installation.pinpointVersion'] ?: ''}"/>
+        <constructor-arg index="1" value="#{pinpointWebProps['web.installation.downloadUrl'] ?: ''}"/>
+    </bean>
 </beans>

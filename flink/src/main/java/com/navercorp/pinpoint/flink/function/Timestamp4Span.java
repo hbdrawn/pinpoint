@@ -15,8 +15,8 @@
  */
 package com.navercorp.pinpoint.flink.function;
 
-import com.navercorp.pinpoint.common.server.bo.SpanBo;
 import com.navercorp.pinpoint.common.server.bo.stat.join.JoinStatBo;
+import com.navercorp.pinpoint.thrift.dto.flink.TFSpan;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.functions.AssignerWithPunctuatedWatermarks;
 import org.apache.flink.streaming.api.watermark.Watermark;
@@ -24,17 +24,17 @@ import org.apache.flink.streaming.api.watermark.Watermark;
 /**
  * @author minwoo.jung
  */
-public class Timestamp4Span implements AssignerWithPunctuatedWatermarks<Tuple3<String, SpanBo, Long>> {
+public class Timestamp4Span implements AssignerWithPunctuatedWatermarks<Tuple3<String, TFSpan, Long>> {
 
     private static final long serialVersionUID = 1L;
 
     @Override
-    public Watermark checkAndGetNextWatermark(Tuple3<String, SpanBo, Long> lastElement, long extractedTimestamp) {
+    public Watermark checkAndGetNextWatermark(Tuple3<String, TFSpan, Long> lastElement, long extractedTimestamp) {
         return new Watermark(lastElement.f2);
     }
 
     @Override
-    public long extractTimestamp(Tuple3<String, SpanBo, Long> value, long previousElementTimestamp) {
+    public long extractTimestamp(Tuple3<String, TFSpan, Long> value, long previousElementTimestamp) {
         return value.f2;
     }
 }

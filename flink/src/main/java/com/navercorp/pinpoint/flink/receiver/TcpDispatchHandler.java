@@ -36,7 +36,7 @@ public class TcpDispatchHandler implements DispatchHandler {
     private SimpleHandler getSimpleHandler(Header header) {
         if (header.getType() == FlinkTBaseLocator.AGENT_STAT_BATCH) {
             return agentStatHandler;
-        } else if (header.getType() == FlinkTBaseLocator.AGENT_SPAN_INFO) {
+        } else if (header.getType() == FlinkTBaseLocator.AGENT_SPAN_INFO || header.getType() == FlinkTBaseLocator.AGENT_SPAN_CHUNK_INFO) {
             return spanHandler;
         }
         throw new UnsupportedOperationException("unsupported header:" + header);

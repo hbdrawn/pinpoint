@@ -1,11 +1,8 @@
 package com.tk.neo4j.config;
 
-import org.neo4j.driver.AuthTokens;
-import org.neo4j.driver.Driver;
-import org.neo4j.driver.GraphDatabase;
-import org.neo4j.driver.AuthTokens;
-import org.neo4j.driver.Driver;
-import org.neo4j.driver.GraphDatabase;
+import org.neo4j.driver.v1.AuthTokens;
+import org.neo4j.driver.v1.Driver;
+import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.ogm.config.ClasspathConfigurationSource;
 import org.neo4j.ogm.config.ConfigurationSource;
 import org.neo4j.ogm.session.SessionFactory;
@@ -24,14 +21,15 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class Neo4jConfiguration {
 
-    ConfigurationSource properties = new ClasspathConfigurationSource("neo4j.ogm.properties");
+    private final String URL = "bolt://10.130.219.60:7687";
+    private final String username = "neo4j";
+    private final String password = "neo4j";
 
 
     @Bean
     public org.neo4j.ogm.config.Configuration configuration() {
-        org.neo4j.ogm.config.Configuration configuration = new org.neo4j.ogm.config.Configuration.Builder(properties).credentials(
-                properties.properties().getProperty("username"),
-                properties.properties().getProperty("password")).build();
+        org.neo4j.ogm.config.Configuration configuration = new org.neo4j.ogm.config.Configuration.Builder().uri(URL)
+                .credentials(username, password).build();
         return configuration;
     }
 
@@ -47,9 +45,7 @@ public class Neo4jConfiguration {
 
     @Bean
     Driver driver() {
-        return GraphDatabase.driver(properties.properties().getProperty("url"), AuthTokens.basic(
-                properties.properties().getProperty("username"),
-                properties.properties().getProperty("password")));
+        return GraphDatabase.driver(URL, AuthTokens.basic(username, password));
     }
 
 }

@@ -1,23 +1,22 @@
-//package com.tk.neo4j.repository;
-//
-//import cn.tk.cip.domain.relationship.RelationShip;
-//import cn.tk.cip.dto.RelationDto;
-//import org.springframework.data.neo4j.annotation.Query;
-//import org.springframework.data.neo4j.repository.Neo4jRepository;
-//import org.springframework.data.repository.query.Param;
-//import org.springframework.stereotype.Repository;
-//
-//import java.util.List;
-//
-//@Repository
-//public interface RelationShipRepository extends Neo4jRepository<RelationShip, Long> {
-//
-//	@Query("unwind {relations} as row with row, row.startNode as start, row.endNode as end "
-//			+ "merge (a:NaturalPerson {customerId:start.customerId}) "
-//			+ "merge (b:NaturalPerson {customerId:end.customerId}) "
-//			+ "merge (a)-[r:RelationType {type:row.type, relationship:row.relationship}]->(b)")
-//	void saveCtmRelations(@Param("relations") List<RelationShip> relations);
-//
+package com.tk.neo4j.repository;
+
+import com.tk.neo4j.domain.relationship.RelationShip;
+import org.springframework.data.neo4j.annotation.Query;
+import org.springframework.data.neo4j.repository.Neo4jRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface RelationShipRepository extends Neo4jRepository<RelationShip, Long> {
+
+    @Query("unwind {relations} as row with row, row.startNode as start, row.endNode as end "
+            + "merge (a:ServerInfo {applicationName:start.applicationName}) "
+            + "merge (b:ServerInfo {applicationName:end.applicationName}) "
+            + "merge (a)-[r:RelationType {type:row.type, relationship:row.relationship}]->(b) set r.invokeTimes = row.invokeTimes")
+    void saveRelations(@Param("relations") List<RelationShip> relations);
+
 //	@Query("unwind {relations} as row with row, row.startNode as start, row.endNode as end "
 //			+ "merge (a:NaturalPerson {customerId:start.customerId}) "
 //			+ "merge (b:ContactInfo {id:end.id}) on create set b.type = end.type, b.number = end.number "
@@ -72,5 +71,5 @@
 //			+ "with n,m,row unwind row.relationships as c "
 //			+ "create (n)-[:RelationType {relationship:c, type:'1'}]->(m)")
 //	void changeCtmRelation(@Param("relations") List<RelationDto> relations);
-//
-//}
+
+}

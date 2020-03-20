@@ -29,6 +29,9 @@ import com.navercorp.pinpoint.flink.receiver.SpanHandler;
 import com.navercorp.pinpoint.flink.receiver.TcpDispatchHandler;
 import com.navercorp.pinpoint.flink.receiver.TcpSourceFunction;
 import com.navercorp.pinpoint.flink.vo.RawData;
+import com.tk.neo4j.repository.RelationShipRepository;
+import com.tk.neo4j.repository.ServerInfoRepository;
+import com.tk.web.WebService;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.LocalStreamEnvironment;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -65,6 +68,10 @@ public class Bootstrap {
     private final StatisticsDaoInterceptor statisticsDaoInterceptor;
     private final ApplicationStatBoWindowInterceptor applicationStatBoWindowInterceptor;
 
+    private final ServerInfoRepository serverInfoRepository;
+    private final RelationShipRepository relationShipRepository;
+    private final WebService webService;
+
     private Bootstrap() {
         applicationContext = new ClassPathXmlApplicationContext("applicationContext-flink.xml");
 
@@ -86,6 +93,9 @@ public class Bootstrap {
         tBaseFlatMapperInterceptor = applicationContext.getBean("tBaseFlatMapperInterceptor", TBaseFlatMapperInterceptor.class);
         statisticsDaoInterceptor = applicationContext.getBean("statisticsDaoInterceptor", StatisticsDaoInterceptor.class);
         applicationStatBoWindowInterceptor = applicationContext.getBean("applicationStatBoWindowInterceptor", ApplicationStatBoWindowInterceptor.class);
+        serverInfoRepository = applicationContext.getBean(ServerInfoRepository.class);
+        relationShipRepository = applicationContext.getBean(RelationShipRepository.class);
+        webService = applicationContext.getBean(WebService.class);
     }
 
     public FileDescriptorDao getFileDescriptorDao() {
@@ -135,6 +145,7 @@ public class Bootstrap {
     public TBaseFlatMapper getTbaseFlatMapper() {
         return tbaseFlatMapper;
     }
+
     public TBase4SpanFlatMapper getTBase4SpanFlatMapper() {
         return tBase4SpanFlatMapper;
     }
@@ -193,4 +204,18 @@ public class Bootstrap {
     public ApplicationStatBoWindowInterceptor getApplicationStatBoWindowInterceptor() {
         return applicationStatBoWindowInterceptor;
     }
+
+    public ServerInfoRepository getServerInfoRepository() {
+        return serverInfoRepository;
+    }
+
+    public RelationShipRepository getRelationShipRepository() {
+        return relationShipRepository;
+    }
+
+    public WebService getWebService() {
+        return webService;
+    }
+
+
 }

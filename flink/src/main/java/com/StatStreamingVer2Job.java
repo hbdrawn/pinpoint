@@ -41,6 +41,7 @@ import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindo
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 
 import java.io.Serializable;
 import java.util.List;
@@ -55,6 +56,7 @@ public class StatStreamingVer2Job implements Serializable {
     public void start() throws Exception {
         logger.info("start job");
         final Bootstrap bootstrap = Bootstrap.getInstance();
+        bootstrap.getWebService().createNode();
 
         // set data source
         final TcpSourceFunction tcpSourceFunction = bootstrap.getTcpSourceFunction();
@@ -76,7 +78,7 @@ public class StatStreamingVer2Job implements Serializable {
                 .apply(new ApplicationStatBoWindow());
         applicationStatAggregationData.writeUsingOutputFormat(statisticsDao);
 
-        //针对数据源生成图库节点
+        //生成topn指标信息
 //        SingleOutputStreamOperator<String> applicationStatAggregationDatat = statOperator.filter(value -> value.f1 instanceof ApplicationStatus4Neo4j)
 //                .assignTimestampsAndWatermarks(new Timestamp())
 //                .keyBy(0)
@@ -88,12 +90,15 @@ public class StatStreamingVer2Job implements Serializable {
 
         //根据span标签生成图结构及关联关系
         //0. generation rawdata
-        final SingleOutputStreamOperator<Tuple2<ServerInfo, List<RelationShip>>> spanOperator = rawData.flatMap(bootstrap.getTBase4SpanFlatMapper())
+        final SingleOutputStreamOperator<Tuple2<List<ServerInfo>, List<RelationShip>>> spanOperator = rawData.flatMap(bootstrap.getTBase4SpanFlatMapper())
                 .assignTimestampsAndWatermarks(new Timestamp4Span())
-                .timeWindowAll(Time.seconds(10),Time.seconds(10))
-                .allowedLateness(Time.milliseconds(ApplicationSpanBoWindow.ALLOWED_LATENESS))
-                .apply(new ApplicationSpanBoWindow());
+                .timeWindowAll(Time.seconds(10), Time.seconds(10))
+                .allowedLateness(Time.milliseconds(ApplicationTFSpanWindow.ALLOWED_LATENESS))
+                .apply(new ApplicationTFSpanWindow());
         spanOperator.print();
+//        SingleOutputStreamOperator<Tuple3<String, SpanBo, Long>> flatMap = rawData.flatMap(bootstrap.getTBase4SpanFlatMapper());
+//        flatMap.print();
+
         // 1-2. aggregate application stat data
 //        statOperator.filter(new FilterFunction<Tuple3<String, JoinStatBo, Long>>() {
 //            @Override

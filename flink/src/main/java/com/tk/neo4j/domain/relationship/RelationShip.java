@@ -8,7 +8,7 @@ import org.neo4j.ogm.annotation.StartNode;
 /**
  * neo4j关系:HAVE
  */
-@RelationshipEntity(type = "RelationType")
+@RelationshipEntity(type = "invoke")
 public class RelationShip<S extends BaseNode, E extends BaseNode> {
 
     private String type;
